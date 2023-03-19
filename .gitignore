@@ -5,3 +5,4 @@ patches/rootfs/usbgadget
 patches/rootfs/usbgadget.service
 *.img
 *.img.*
+asix/

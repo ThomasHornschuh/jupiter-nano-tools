@@ -1,4 +1,5 @@
 #!/bin/bash -ex
+echo "Starting chroot phase"
 
 export LC_ALL=C
 export LANGUAGE=C
@@ -23,7 +24,12 @@ apt-get update && apt-get install -y \
 	libtool \
 	pkg-config \
 	swig3.0 \
-	wget
+	wget \
+	dnsutils \
+	ftp \
+
+#apt upgrade -y 
+
 
 # Force update ca-certificates
 update-ca-certificates -f
@@ -50,13 +56,13 @@ fi
 
 
 # Enable the gadget service
-if (systemctl -q is-enabled usbgadget-serial.service); then
-	echo "Log: (chroot) usb gadget already enabled"
-else
-	echo "Log: (chroot) enabling usbgadget service"
-	chmod +x /usr/bin/usbgadget-serial
-	systemctl enable usbgadget-serial.service
-fi
+# if (systemctl -q is-enabled usbgadget-serial.service); then
+# 	echo "Log: (chroot) usb gadget already enabled"
+# else
+# 	echo "Log: (chroot) enabling usbgadget service"
+# 	chmod +x /usr/bin/usbgadget-serial
+# 	systemctl enable usbgadget-serial.service
+# fi
 
 # Make other services executable
 chmod +x /usr/bin/usbgadget-serial-eth
@@ -92,15 +98,16 @@ sudo cp bindings/python/.libs/gpiod.a /usr/local/lib/python3.?/dist-packages/
 cd /
 
 # Add wifi firmware
-wget https://github.com/linux4wilc/firmware/raw/master/wilc1000_wifi_firmware.bin
-mkdir -p /lib/firmware/mchp
-mv wilc1000_wifi_firmware.bin /lib/firmware/mchp
+# wget https://github.com/linux4wilc/firmware/raw/master/wilc1000_wifi_firmware.bin
+# mkdir -p /lib/firmware/mchp
+# mv wilc1000_wifi_firmware.bin /lib/firmware/mchp
 
 # Install blinka and circuitpython packages
 pip3 install -r requirements.txt
 
 # Clean up
 apt-get clean
+
 
 echo "Log: (chroot) chroot complete, exiting.."
 

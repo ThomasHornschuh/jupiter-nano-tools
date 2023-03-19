@@ -12,13 +12,15 @@ rootfs_dir="${output_dir}/rootfs"
 overlays_dir="${output_dir}/overlays"
 
 
-IMAGE_FILE=jupiter_nano.img
+IMAGE_FILE=jupiter_nano_bullseye.img
 
-SIZE_IN_MB=$(( $(sudo du ./output/rootfs -s | tr -dc '0-9') / 1000 + 256 ))
+SIZE_IN_MB=$(( $(sudo du ./output/rootfs -s | tr -dc '0-9') / 1000 + 512 ))
+#SIZE_IN_MB=3072
 echo "creating $SIZE_IN_MB MB image"
 
 # Create empty image file
 dd if=/dev/zero of=${IMAGE_FILE} bs=1M count=${SIZE_IN_MB}
+
 
 # Find a free loop
 ld=$(losetup --show -f ${IMAGE_FILE})
@@ -66,7 +68,8 @@ mkdir -p /media/boot/dtbs/
 cp -v ${images_dir}/at91-sama5d27_jupiter_nano.dtb /media/boot/dtbs/
 
 # copy kernel modules
-cp -av ${modules_dir}/lib/ /media/rootfs/
+#cp -v ${images_dir}/modules-5.4.0.tar.gz /media/rootfs/usr/lib
+cp -av ${modules_dir}/lib/modules /media/rootfs/lib/modules
 
 # copy overlays
 mkdir -p /media/boot/overlays/

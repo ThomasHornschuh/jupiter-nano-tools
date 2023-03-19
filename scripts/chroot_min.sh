@@ -52,12 +52,13 @@ add_user () {
 
 # Add sources
 cat <<EOT > /etc/apt/sources.list
-deb http://deb.debian.org/debian stretch main contrib non-free
-deb-src http://deb.debian.org/debian stretch main contrib non-free
-
-deb http://security.debian.org/debian-security stretch/updates main contrib
-deb-src http://security.debian.org/debian-security stretch/updates main contrib
+deb http://deb.debian.org/debian bullseye main contrib non-free
+deb http://security.debian.org/debian-security bullseye-security main contrib non-free
+deb http://deb.debian.org/debian bullseye-updates main contrib non-free
 EOT
+
+#Debug Output
+cat /etc/apt/sources.list
 
 # Update sources
 echo "Log: (chroot_min) apt-get udpating rootfs packages."

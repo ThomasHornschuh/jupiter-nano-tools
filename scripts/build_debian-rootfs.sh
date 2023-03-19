@@ -12,12 +12,15 @@ min_rootfs_dir="${output_dir}/min_rootfs"
 if [ ! -d "${min_rootfs_dir}" ]; then
 	echo "Log: (debootstrap) no minimum rootfs found. Building minimum rootfs to save time in the future."
 	mkdir -p ${min_rootfs_dir}
-	debootstrap \
-		--include usbutils,net-tools,i2c-tools,parted,sudo \
-		--arch armhf \
-		--foreign stretch \
-		${min_rootfs_dir} \
-		http://ftp.us.debian.org/debian/
+	debootstrap  --verbose --foreign  --arch=armhf --include "usbutils,net-tools,i2c-tools,parted,sudo"  bullseye  ${min_rootfs_dir}
+	
+	# debootstrap \
+	# 	--include usbutils,net-tools,i2c-tools,parted,sudo \
+	# 	--arch armhf \
+		
+	# 	bullseye \
+	# 	${min_rootfs_dir} \
+	# 	http://ftp.us.debian.org/debian/
 	
 	
 	cp /usr/bin/qemu-arm-static ${min_rootfs_dir}/usr/bin/
@@ -28,6 +31,7 @@ if [ ! -d "${min_rootfs_dir}" ]; then
 	chmod -R 755 ${min_rootfs_dir}/run
 	mount -t tmpfs run "${min_rootfs_dir}/run"
 
+	echo "Start second stage"
 	chroot ${min_rootfs_dir} /debootstrap/debootstrap --second-stage
 	
 	mount -t sysfs sysfs "${min_rootfs_dir}/sys"
@@ -78,6 +82,10 @@ cp ${patch_dir}/usbgadget-serial-eth-ms.service ${rootfs_dir}/lib/systemd/system
 
 cp ${patch_dir}/batt.service ${rootfs_dir}/lib/systemd/system
 cp ${patch_dir}/batt_service.sh ${rootfs_dir}/usr/bin/
+
+echo "Local USB Network config"
+cp ${patch_dir}/interfaces ${rootfs_dir}/etc/network
+cp ${patch_dir}/70-persistent-net.rules ${rootfs_dir}/etc/udev/rules.d
 
 
 if [ ! -d "${rootfs_dir}/run" ]; then
